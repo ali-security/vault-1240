@@ -2702,9 +2702,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hashicorp/design-system-components@npm:5.0.0-rc-20251013193429":
-  version: 5.0.0-rc-20251013193429
-  resolution: "@hashicorp/design-system-components@npm:5.0.0-rc-20251013193429"
+"@hashicorp/design-system-components@npm:5.0.0-rc-20251103205314":
+  version: 5.0.0-rc-20251103205314
+  resolution: "@hashicorp/design-system-components@npm:5.0.0-rc-20251103205314"
   dependencies:
     "@codemirror/commands": ^6.8.0
     "@codemirror/lang-go": ^6.0.1
@@ -2725,7 +2725,7 @@ __metadata:
     "@embroider/util": ^1.13.4
     "@floating-ui/dom": ^1.6.12
     "@hashicorp/design-system-tokens": ^3.0.0
-    "@hashicorp/flight-icons": 4.0.0-rc-20251013193429
+    "@hashicorp/flight-icons": 4.0.0-rc-20251103205314
     "@lezer/highlight": ^1.2.1
     "@nullvoxpopuli/ember-composable-helpers": ^5.2.11
     clipboard-polyfill: ^4.1.1
@@ -2756,7 +2756,7 @@ __metadata:
       optional: true
     ember-intl:
       optional: true
-  checksum: e3c0320933d08ec1266095e7b966fd8c07373333886b2ce2a5e0f40195acc339f9b7c77d3875058300ebd20035593aac4288df95fa35c8f1ef7ee1e9283495eb
+  checksum: 3e72dacb9c166d84a1fa5eca2a7ddc5e75ec775ac4fb049c6f1b6f75a2bb943731144c6ff5cef18a737684f180cea57ad67d6dda3892dcfc85bd26253268cb98
   languageName: node
   linkType: hard
 
@@ -2767,10 +2767,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hashicorp/flight-icons@npm:4.0.0-rc-20251013193429":
-  version: 4.0.0-rc-20251013193429
-  resolution: "@hashicorp/flight-icons@npm:4.0.0-rc-20251013193429"
-  checksum: f27ba5dec7242d5f0d7099703020c571f5c14fd3c4059aa7c51317edc3ddce2b039bab734f74848da43104cbb5fd54f14c800f93caab9d9d294230a96bc26c2f
+"@hashicorp/flight-icons@npm:4.0.0-rc-20251103205314":
+  version: 4.0.0-rc-20251103205314
+  resolution: "@hashicorp/flight-icons@npm:4.0.0-rc-20251103205314"
+  checksum: 11f53d6c0713c8bd55c9cdc27915da891c2b60e745d2ee1ea48c1d52b328cedccf2f72d1441f67c2359b68c19bec01a27d9db3d0a5b563ebb1a767ef431f40f9
   languageName: node
   linkType: hard
 
@@ -18609,7 +18609,7 @@ __metadata:
     "@glimmer/component": ~1.1.2
     "@glimmer/tracking": ~1.1.2
     "@hashicorp-internal/vault-reporting": "file:vault-reporting/0.8.0.tgz"
-    "@hashicorp/design-system-components": 5.0.0-rc-20251013193429
+    "@hashicorp/design-system-components": 5.0.0-rc-20251103205314
     "@hashicorp/vault-client-typescript": hashicorp/vault-client-typescript
     "@icholy/duration": ~5.1.0
     "@lineal-viz/lineal": ~0.5.1
