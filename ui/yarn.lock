@@ -2702,9 +2702,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hashicorp/design-system-components@npm:5.0.0-rc-20251103205314":
-  version: 5.0.0-rc-20251103205314
-  resolution: "@hashicorp/design-system-components@npm:5.0.0-rc-20251103205314"
+"@hashicorp/design-system-components@npm:5.0.0-rc-20251105174540":
+  version: 5.0.0-rc-20251105174540
+  resolution: "@hashicorp/design-system-components@npm:5.0.0-rc-20251105174540"
   dependencies:
     "@codemirror/commands": ^6.8.0
     "@codemirror/lang-go": ^6.0.1
@@ -2725,7 +2725,7 @@ __metadata:
     "@embroider/util": ^1.13.4
     "@floating-ui/dom": ^1.6.12
     "@hashicorp/design-system-tokens": ^3.0.0
-    "@hashicorp/flight-icons": 4.0.0-rc-20251103205314
+    "@hashicorp/flight-icons": 4.0.0-rc-20251105174540
     "@lezer/highlight": ^1.2.1
     "@nullvoxpopuli/ember-composable-helpers": ^5.2.11
     clipboard-polyfill: ^4.1.1
@@ -2735,7 +2735,6 @@ __metadata:
     ember-concurrency: ^4.0.4
     ember-element-helper: ^0.8.6
     ember-focus-trap: ^1.1.1
-    ember-get-config: ^2.1.1
     ember-modifier: ^4.2.2
     ember-power-select: ^8.7.1
     ember-stargate: ^1.0.2
@@ -2756,7 +2755,7 @@ __metadata:
       optional: true
     ember-intl:
       optional: true
-  checksum: 3e72dacb9c166d84a1fa5eca2a7ddc5e75ec775ac4fb049c6f1b6f75a2bb943731144c6ff5cef18a737684f180cea57ad67d6dda3892dcfc85bd26253268cb98
+  checksum: 451b73014f53757f1eab32c17284f209dcfa740d0e25ede0f23309fc0e278209869a6b122642cf5ca2cf1a413c41387d57d3b189eb0dc4ad73e22b47ffa09227
   languageName: node
   linkType: hard
 
@@ -2767,10 +2766,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hashicorp/flight-icons@npm:4.0.0-rc-20251103205314":
-  version: 4.0.0-rc-20251103205314
-  resolution: "@hashicorp/flight-icons@npm:4.0.0-rc-20251103205314"
-  checksum: 11f53d6c0713c8bd55c9cdc27915da891c2b60e745d2ee1ea48c1d52b328cedccf2f72d1441f67c2359b68c19bec01a27d9db3d0a5b563ebb1a767ef431f40f9
+"@hashicorp/flight-icons@npm:4.0.0-rc-20251105174540":
+  version: 4.0.0-rc-20251105174540
+  resolution: "@hashicorp/flight-icons@npm:4.0.0-rc-20251105174540"
+  checksum: 145dfe5fd1d1aee15efe920f1f0d6f81045ff4b3893723852fca7196bd17111323a016f15b3d7b27f6ec699dc7b2c647a65dcedcc346d389348d53d19ec04ed7
   languageName: node
   linkType: hard
 
@@ -8781,7 +8780,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ember-get-config@npm:0.2.4 - 0.5.0 || ^1.0.0 || ^2.1.1, ember-get-config@npm:^2.1.1":
+"ember-get-config@npm:0.2.4 - 0.5.0 || ^1.0.0 || ^2.1.1":
   version: 2.1.1
   resolution: "ember-get-config@npm:2.1.1"
   dependencies:
@@ -18609,7 +18608,7 @@ __metadata:
     "@glimmer/component": ~1.1.2
     "@glimmer/tracking": ~1.1.2
     "@hashicorp-internal/vault-reporting": "file:vault-reporting/0.8.0.tgz"
-    "@hashicorp/design-system-components": 5.0.0-rc-20251103205314
+    "@hashicorp/design-system-components": 5.0.0-rc-20251105174540
     "@hashicorp/vault-client-typescript": hashicorp/vault-client-typescript
     "@icholy/duration": ~5.1.0
     "@lineal-viz/lineal": ~0.5.1
