@@ -6,7 +6,7 @@ on:
 jobs:
   stable_website_cherry_pick:
     if: github.event.pull_request.merged && contains(github.event.pull_request.labels.*.name, 'docs-cherrypick')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: Cherry pick to stable-website branch
     steps:
     - name: Checkout

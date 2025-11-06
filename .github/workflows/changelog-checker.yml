@@ -15,7 +15,7 @@ jobs:
   changelog-check:
     # If there  a `pr/no-changelog` label we ignore this check
     if: "!contains(github.event.pull_request.labels.*.name, 'pr/no-changelog')"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v2

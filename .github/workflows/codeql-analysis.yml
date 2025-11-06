@@ -1,14 +1,12 @@
 name: "Code scanning - scheduled (weekly) or on-demand"
 
 on:
-  schedule:
-    - cron: '0 15 * * 0'
   workflow_dispatch:
 
 jobs:
   CodeQL-Build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Checkout repository
