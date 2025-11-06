@@ -99,6 +99,24 @@ type Listener struct {
 	CorsAllowedOrigins    []string    `hcl:"cors_allowed_origins"`
 	CorsAllowedHeaders    []string    `hcl:"-"`
 	CorsAllowedHeadersRaw []string    `hcl:"cors_allowed_headers,alias:cors_allowed_headers"`
+
+	// JSON-specific limits
+
+	// CustomMaxJSONDepth specifies the maximum nesting depth of a JSON object.
+	CustomMaxJSONDepthRaw interface{} `hcl:"max_json_depth"`
+	CustomMaxJSONDepth    int64       `hcl:"-"`
+
+	// CustomMaxJSONStringValueLength defines the maximum allowed length for a string in a JSON payload.
+	CustomMaxJSONStringValueLengthRaw interface{} `hcl:"max_json_string_value_length"`
+	CustomMaxJSONStringValueLength    int64       `hcl:"-"`
+
+	// CustomMaxJSONObjectEntryCount sets the maximum number of key-value pairs in a JSON object.
+	CustomMaxJSONObjectEntryCountRaw interface{} `hcl:"max_json_object_entry_count"`
+	CustomMaxJSONObjectEntryCount    int64       `hcl:"-"`
+
+	// CustomMaxJSONArrayElementCount determines the maximum number of elements in a JSON array.
+	CustomMaxJSONArrayElementCountRaw interface{} `hcl:"max_json_array_element_count"`
+	CustomMaxJSONArrayElementCount    int64       `hcl:"-"`
 }
 
 func (l *Listener) GoString() string {
@@ -358,6 +376,53 @@ func ParseListeners(result *SharedConfig, list *ast.ObjectList) error {
 				for _, header := range l.CorsAllowedHeadersRaw {
 					l.CorsAllowedHeaders = append(l.CorsAllowedHeaders, textproto.CanonicalMIMEHeaderKey(header))
 				}
+			}
+		}
+
+		// JSON Limits
+		{
+			if l.CustomMaxJSONDepthRaw != nil {
+				if l.CustomMaxJSONDepth, err = parseutil.ParseInt(l.CustomMaxJSONDepthRaw); err != nil {
+					return multierror.Prefix(fmt.Errorf("error parsing max_json_depth: %w", err), fmt.Sprintf("listeners.%d", i))
+				}
+				if l.CustomMaxJSONDepth < 0 {
+					return multierror.Prefix(errors.New("max_json_depth cannot be negative"), fmt.Sprintf("listeners.%d", i))
+				}
+
+				l.CustomMaxJSONDepthRaw = nil
+			}
+
+			if l.CustomMaxJSONStringValueLengthRaw != nil {
+				if l.CustomMaxJSONStringValueLength, err = parseutil.ParseInt(l.CustomMaxJSONStringValueLengthRaw); err != nil {
+					return multierror.Prefix(fmt.Errorf("error parsing max_json_string_value_length: %w", err), fmt.Sprintf("listeners.%d", i))
+				}
+				if l.CustomMaxJSONStringValueLength < 0 {
+					return multierror.Prefix(errors.New("max_json_string_value_length cannot be negative"), fmt.Sprintf("listeners.%d", i))
+				}
+
+				l.CustomMaxJSONStringValueLengthRaw = nil
+			}
+
+			if l.CustomMaxJSONObjectEntryCountRaw != nil {
+				if l.CustomMaxJSONObjectEntryCount, err = parseutil.ParseInt(l.CustomMaxJSONObjectEntryCountRaw); err != nil {
+					return multierror.Prefix(fmt.Errorf("error parsing max_json_object_entry_count: %w", err), fmt.Sprintf("listeners.%d", i))
+				}
+				if l.CustomMaxJSONObjectEntryCount < 0 {
+					return multierror.Prefix(errors.New("max_json_object_entry_count cannot be negative"), fmt.Sprintf("listeners.%d", i))
+				}
+
+				l.CustomMaxJSONObjectEntryCountRaw = nil
+			}
+
+			if l.CustomMaxJSONArrayElementCountRaw != nil {
+				if l.CustomMaxJSONArrayElementCount, err = parseutil.ParseInt(l.CustomMaxJSONArrayElementCountRaw); err != nil {
+					return multierror.Prefix(fmt.Errorf("error parsing max_json_array_element_count: %w", err), fmt.Sprintf("listeners.%d", i))
+				}
+				if l.CustomMaxJSONArrayElementCount < 0 {
+					return multierror.Prefix(errors.New("max_json_array_element_count cannot be negative"), fmt.Sprintf("listeners.%d", i))
+				}
+
+				l.CustomMaxJSONArrayElementCountRaw = nil
 			}
 		}
 
