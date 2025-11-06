@@ -134,7 +134,7 @@ func buildLogicalRequestNoAuth(perfStandby bool, w http.ResponseWriter, r *http.
 				if err != nil {
 					status := http.StatusBadRequest
 					logical.AdjustErrorStatusCode(&status, err)
-					return nil, nil, status, fmt.Errorf("error parsing JSON: %w", err)
+					return nil, nil, status, fmt.Errorf("error parsing JSON")
 				}
 			}
 		}

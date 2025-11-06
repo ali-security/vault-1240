@@ -99,24 +99,6 @@ type Listener struct {
 	CorsAllowedOrigins    []string    `hcl:"cors_allowed_origins"`
 	CorsAllowedHeaders    []string    `hcl:"-"`
 	CorsAllowedHeadersRaw []string    `hcl:"cors_allowed_headers,alias:cors_allowed_headers"`
-
-	// JSON-specific limits
-
-	// CustomMaxJSONDepth specifies the maximum nesting depth of a JSON object.
-	CustomMaxJSONDepthRaw interface{} `hcl:"max_json_depth"`
-	CustomMaxJSONDepth    int64       `hcl:"-"`
-
-	// CustomMaxJSONStringValueLength defines the maximum allowed length for a string in a JSON payload.
-	CustomMaxJSONStringValueLengthRaw interface{} `hcl:"max_json_string_value_length"`
-	CustomMaxJSONStringValueLength    int64       `hcl:"-"`
-
-	// CustomMaxJSONObjectEntryCount sets the maximum number of key-value pairs in a JSON object.
-	CustomMaxJSONObjectEntryCountRaw interface{} `hcl:"max_json_object_entry_count"`
-	CustomMaxJSONObjectEntryCount    int64       `hcl:"-"`
-
-	// CustomMaxJSONArrayElementCount determines the maximum number of elements in a JSON array.
-	CustomMaxJSONArrayElementCountRaw interface{} `hcl:"max_json_array_element_count"`
-	CustomMaxJSONArrayElementCount    int64       `hcl:"-"`
 }
 
 func (l *Listener) GoString() string {
@@ -200,10 +182,6 @@ func ParseListeners(result *SharedConfig, list *ast.ObjectList) error {
 				}
 
 				l.RequireRequestHeaderRaw = nil
-			}
-
-			if err := l.parseJSONLimitsSettings(); err != nil {
-				return err
 			}
 		}
 
@@ -384,57 +362,6 @@ func ParseListeners(result *SharedConfig, list *ast.ObjectList) error {
 		}
 
 		result.Listeners = append(result.Listeners, &l)
-	}
-
-	return nil
-}
-
-// parseAndClearInt parses a raw setting as an integer configuration parameter.
-// If the raw value is successfully parsed, the parsedSetting argument is set to
-// it and the rawSetting argument is cleared. Otherwise, the rawSetting argument
-// is left unchanged and an error is returned.
-func parseAndClearInt(rawSetting *interface{}, parsedSetting *int64) error {
-	var err error
-
-	if *rawSetting != nil {
-		*parsedSetting, err = parseutil.ParseInt(*rawSetting)
-		if err != nil {
-			return err
-		}
-
-		*rawSetting = nil
-	}
-
-	return nil
-}
-
-func (l *Listener) parseJSONLimitsSettings() error {
-	if err := parseAndClearInt(&l.CustomMaxJSONDepthRaw, &l.CustomMaxJSONDepth); err != nil {
-		return fmt.Errorf("error parsing max_json_depth: %w", err)
-	}
-	if l.CustomMaxJSONDepth < 0 {
-		return fmt.Errorf("max_json_depth cannot be negative")
-	}
-
-	if err := parseAndClearInt(&l.CustomMaxJSONStringValueLengthRaw, &l.CustomMaxJSONStringValueLength); err != nil {
-		return fmt.Errorf("error parsing max_json_string_value_length: %w", err)
-	}
-	if l.CustomMaxJSONStringValueLength < 0 {
-		return fmt.Errorf("max_json_string_value_length cannot be negative")
-	}
-
-	if err := parseAndClearInt(&l.CustomMaxJSONObjectEntryCountRaw, &l.CustomMaxJSONObjectEntryCount); err != nil {
-		return fmt.Errorf("error parsing max_json_object_entry_count: %w", err)
-	}
-	if l.CustomMaxJSONObjectEntryCount < 0 {
-		return fmt.Errorf("max_json_object_entry_count cannot be negative")
-	}
-
-	if err := parseAndClearInt(&l.CustomMaxJSONArrayElementCountRaw, &l.CustomMaxJSONArrayElementCount); err != nil {
-		return fmt.Errorf("error parsing max_json_array_element_count: %w", err)
-	}
-	if l.CustomMaxJSONArrayElementCount < 0 {
-		return fmt.Errorf("max_json_array_element_count cannot be negative")
 	}
 
 	return nil
