@@ -961,6 +961,26 @@ func (c *ServerCommand) InitListeners(config *server.Config, disableClustering b
 		}
 		props["max_request_size"] = fmt.Sprintf("%d", lnConfig.MaxRequestSize)
 
+		if lnConfig.CustomMaxJSONDepth == 0 {
+			lnConfig.CustomMaxJSONDepth = vault.CustomMaxJSONDepth
+		}
+		props["max_json_depth"] = fmt.Sprintf("%d", lnConfig.CustomMaxJSONDepth)
+
+		if lnConfig.CustomMaxJSONStringValueLength == 0 {
+			lnConfig.CustomMaxJSONStringValueLength = vault.CustomMaxJSONStringValueLength
+		}
+		props["max_json_string_value_length"] = fmt.Sprintf("%d", lnConfig.CustomMaxJSONStringValueLength)
+
+		if lnConfig.CustomMaxJSONObjectEntryCount == 0 {
+			lnConfig.CustomMaxJSONObjectEntryCount = vault.CustomMaxJSONObjectEntryCount
+		}
+		props["max_json_object_entry_count"] = fmt.Sprintf("%d", lnConfig.CustomMaxJSONObjectEntryCount)
+
+		if lnConfig.CustomMaxJSONArrayElementCount == 0 {
+			lnConfig.CustomMaxJSONArrayElementCount = vault.CustomMaxJSONArrayElementCount
+		}
+		props["max_json_array_element_count"] = fmt.Sprintf("%d", lnConfig.CustomMaxJSONArrayElementCount)
+
 		if lnConfig.MaxRequestDuration == 0 {
 			lnConfig.MaxRequestDuration = vault.DefaultMaxRequestDuration
 		}

@@ -274,8 +274,16 @@ func TestLogical_RequestSizeLimit(t *testing.T) {
 	// Write a very large object, should fail. This test works because Go will
 	// convert the byte slice to base64, which makes it significantly larger
 	// than the default max request size.
+
+	// Test change: Previously used DefaultMaxRequestSize to create a large payload.
+	// However, after introducing JSON limits, the test successfully disables the first layer (MaxRequestSize),
+	// but its large 32MB payload is then correctly caught by the second layer—specifically,
+	// the CustomMaxStringValueLength limit, which defaults to 1MB.
+	// Create a payload that is larger than a typical small limit (e.g., > 1KB),
+	// but is well within the default JSON string length limit (1MB).
+	// This isolates the test to *only* the MaxRequestSize behavior.
 	resp := testHttpPut(t, token, addr+"/v1/secret/foo", map[string]interface{}{
-		"data": make([]byte, DefaultMaxRequestSize),
+		"data": make([]byte, 2048),
 	})
 	testResponseStatus(t, resp, http.StatusRequestEntityTooLarge)
 }

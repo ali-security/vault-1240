@@ -69,6 +69,43 @@ const (
 	// provided and the server is fed ever more data until it exhausts memory.
 	// Can be overridden per listener.
 	DefaultMaxRequestSize = 32 * 1024 * 1024
+
+	// CustomMaxJSONDepth specifies the maximum nesting depth of a JSON object.
+	// This limit is designed to prevent stack exhaustion attacks from deeply
+	// nested JSON payloads, which could otherwise lead to a denial-of-service
+	// (DoS) vulnerability. The default value of 300 is intentionally generous
+	// to support complex but legitimate configurations, while still providing
+	// a safeguard against malicious or malformed input. This value is
+	// configurable to accommodate unique environmental requirements.
+	CustomMaxJSONDepth = 300
+
+	// CustomMaxJSONStringValueLength defines the maximum allowed length for a single
+	// string value within a JSON payload, in bytes. This is a critical defense
+	// against excessive memory allocation attacks where a client might send a
+	// very large string value to exhaust server memory. The default of 1MB
+	// (1024 * 1024 bytes) is chosen to comfortably accommodate large secrets
+	// such as private keys, certificate chains, or detailed configuration data,
+	// without permitting unbounded allocation. This value is configurable.
+	CustomMaxJSONStringValueLength = 1024 * 1024 // 1MB
+
+	// CustomMaxJSONObjectEntryCount sets the maximum number of key-value pairs
+	// allowed in a single JSON object. This limit helps mitigate the risk of
+	// hash-collision denial-of-service (HashDoS) attacks and prevents general
+	// resource exhaustion from parsing objects with an excessive number of
+	// entries. A default of 10,000 entries is well beyond the scope of typical
+	// Vault secrets or configurations, providing a high ceiling for normal
+	// operations while ensuring stability. This value is configurable.
+	CustomMaxJSONObjectEntryCount = 10000
+
+	// CustomMaxJSONArrayElementCount determines the maximum number of elements
+	// permitted in a single JSON array. This is particularly relevant for API
+	// endpoints that can return large lists, such as the result of a `LIST`
+	// operation on a secrets engine path. The default limit of 10,000 elements
+	// prevents a single request from causing excessive memory consumption. While
+	// most environments will fall well below this limit, it is configurable for
+	// systems that require handling larger datasets, though pagination is the
+	// recommended practice for such cases.
+	CustomMaxJSONArrayElementCount = 10000
 )
 
 var (
@@ -282,10 +319,14 @@ func handleAuditNonLogical(core *vault.Core, h http.Handler) http.Handler {
 // are performed.
 func wrapGenericHandler(core *vault.Core, h http.Handler, props *vault.HandlerProperties) http.Handler {
 	var maxRequestDuration time.Duration
-	var maxRequestSize int64
+	var maxRequestSize, maxJSONDepth, maxStringValueLength, maxObjectEntryCount, maxArrayElementCount int64
 	if props.ListenerConfig != nil {
 		maxRequestDuration = props.ListenerConfig.MaxRequestDuration
 		maxRequestSize = props.ListenerConfig.MaxRequestSize
+		maxJSONDepth = props.ListenerConfig.CustomMaxJSONDepth
+		maxStringValueLength = props.ListenerConfig.CustomMaxJSONStringValueLength
+		maxObjectEntryCount = props.ListenerConfig.CustomMaxJSONObjectEntryCount
+		maxArrayElementCount = props.ListenerConfig.CustomMaxJSONArrayElementCount
 	}
 	if maxRequestDuration == 0 {
 		maxRequestDuration = vault.DefaultMaxRequestDuration
@@ -293,12 +334,44 @@ func wrapGenericHandler(core *vault.Core, h http.Handler, props *vault.HandlerPr
 	if maxRequestSize == 0 {
 		maxRequestSize = DefaultMaxRequestSize
 	}
+	if maxJSONDepth == 0 {
+		maxJSONDepth = CustomMaxJSONDepth
+	}
+	if maxStringValueLength == 0 {
+		maxStringValueLength = CustomMaxJSONStringValueLength
+	}
+	if maxObjectEntryCount == 0 {
+		maxObjectEntryCount = CustomMaxJSONObjectEntryCount
+	}
+	if maxArrayElementCount == 0 {
+		maxArrayElementCount = CustomMaxJSONArrayElementCount
+	}
+
+	jsonLimits := jsonutil.JSONLimits{
+		MaxDepth:             int(maxJSONDepth),
+		MaxStringValueLength: int(maxStringValueLength),
+		MaxObjectEntryCount:  int(maxObjectEntryCount),
+		MaxArrayElementCount: int(maxArrayElementCount),
+	}
 
 	// Swallow this error since we don't want to pollute the logs and we also don't want to
 	// return an HTTP error here. This information is best effort.
 	hostname, _ := os.Hostname()
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// If the payload is JSON, the VerifyMaxDepthStreaming function will perform validations.
+		buf, err := jsonLimitsValidation(w, r, maxRequestSize, jsonLimits)
+		if err != nil {
+			respondError(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		// Replace the body and update the context.
+		// This ensures the request object is in a consistent state for all downstream handlers.
+		// Because the original request body stream has been fully consumed by io.ReadAll,
+		// we must replace it so that subsequent handlers can read the content.
+		r.Body = io.NopCloser(buf)
+		
 		// Set the Cache-Control header for all the responses returned
 		// by Vault
 		w.Header().Set("Cache-Control", "no-store")
@@ -355,6 +428,23 @@ func wrapGenericHandler(core *vault.Core, h http.Handler, props *vault.HandlerPr
 		cancelFunc()
 		return
 	})
+}
+
+func jsonLimitsValidation(w http.ResponseWriter, r *http.Request, maxRequestSize int64, jsonLimits jsonutil.JSONLimits) (*bytes.Buffer, error) {
+	// The TeeReader reads from the original body and writes a copy to our buffer.
+	// We wrap the original body with a MaxBytesReader first to enforce the hard size limit.
+	var limitedTeeReader io.Reader
+	buf := &bytes.Buffer{}
+	bodyReader := r.Body
+	if maxRequestSize > 0 {
+		bodyReader = http.MaxBytesReader(w, r.Body, maxRequestSize)
+	}
+	limitedTeeReader = io.TeeReader(bodyReader, buf)
+	_, err := jsonutil.VerifyMaxDepthStreaming(limitedTeeReader, jsonLimits)
+	if err != nil {
+		return nil, err
+	}
+	return buf, nil
 }
 
 func WrapForwardedForHandler(h http.Handler, l *configutil.Listener) http.Handler {
